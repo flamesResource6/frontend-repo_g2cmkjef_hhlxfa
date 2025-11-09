@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
 import { Upload, Settings, Wand2, Loader2, CheckCircle2 } from 'lucide-react';
 
-export default function Workflow() {
+export default function Workflow({ onJobReady }) {
   const [files, setFiles] = useState([]);
   const [processing, setProcessing] = useState(false);
   const [done, setDone] = useState(false);
+  const [error, setError] = useState(null);
 
   const handleDrop = (e) => {
     e.preventDefault();
@@ -17,14 +18,27 @@ export default function Workflow() {
     setFiles((prev) => [...prev, ...picked]);
   };
 
-  const startMockProcessing = () => {
-    // Mock UI flow: in a full build this would call backend endpoints using VITE_BACKEND_URL
+  const startProcessing = async () => {
     setProcessing(true);
     setDone(false);
-    setTimeout(() => {
+    setError(null);
+    try {
+      const form = new FormData();
+      form.append('mode', 'full');
+      form.append('target_duration_sec', '900');
+      form.append('output_format', '16:9');
+      files.forEach((f) => form.append('files', f));
+      const base = import.meta.env.VITE_BACKEND_URL || '';
+      const res = await fetch(`${base}/api/jobs`, { method: 'POST', body: form });
+      if (!res.ok) throw new Error('Upload/processing failed');
+      const data = await res.json();
       setProcessing(false);
       setDone(true);
-    }, 2200);
+      onJobReady?.(data.job || data);
+    } catch (e) {
+      setProcessing(false);
+      setError(e.message);
+    }
   };
 
   return (
@@ -89,7 +103,7 @@ export default function Workflow() {
             </div>
 
             <button
-              onClick={startMockProcessing}
+              onClick={startProcessing}
               disabled={processing || files.length === 0}
               className="mt-4 inline-flex items-center gap-2 rounded-lg bg-emerald-500 px-5 py-2.5 text-sm font-semibold text-emerald-950 transition hover:bg-emerald-400 disabled:cursor-not-allowed disabled:opacity-60"
             >
@@ -109,6 +123,7 @@ export default function Workflow() {
                 <CheckCircle2 className="h-4 w-4" /> Editing completato! Trovi 6 versioni qui sotto.
               </div>
             )}
+            {error && <div className="text-sm text-red-400">{error}</div>}
           </div>
         </div>
       </div>

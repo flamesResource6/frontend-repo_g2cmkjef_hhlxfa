@@ -1,28 +1,25 @@
-import { useState } from 'react'
+import React from 'react';
+import Hero from './components/Hero';
+import Features from './components/Features';
+import Workflow from './components/Workflow';
+import Results from './components/Results';
+import Covers from './components/Covers';
 
-function App() {
-  const [count, setCount] = useState(0)
-
+export default function App() {
   return (
-    <div className="min-h-screen bg-gradient-to-br from-purple-50 to-blue-50 flex items-center justify-center">
-      <div className="bg-white p-8 rounded-lg shadow-lg">
-        <h1 className="text-3xl font-bold text-gray-800 mb-4">
-          Vibe Coding Platform
-        </h1>
-        <p className="text-gray-600 mb-6">
-          Your AI-powered development environment
-        </p>
-        <div className="text-center">
-          <button
-            onClick={() => setCount(count + 1)}
-            className="bg-blue-500 hover:bg-blue-600 text-white font-semibold py-2 px-4 rounded"
-          >
-            Count is {count}
-          </button>
+    <div className="min-h-screen w-full bg-slate-950 font-inter text-white">
+      <Hero />
+      <Features />
+      <Workflow />
+      <Results />
+      <Covers />
+      <footer className="border-t border-white/10 bg-slate-950 py-10 text-center text-sm text-slate-400">
+        <div className="mx-auto max-w-6xl px-6">
+          <p>
+            Prossimi passi: collega la tua API e abilita l'editing AI reale (Anthropic, FFmpeg, pipeline GPU). Questa interfaccia è già ottimizzata per grandi file e flussi in tempo reale.
+          </p>
         </div>
-      </div>
+      </footer>
     </div>
-  )
+  );
 }
-
-export default App
